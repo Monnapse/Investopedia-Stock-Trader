@@ -1,5 +1,7 @@
-from InvestopediaApi import ita
+import Investopedia
 
-client = ita.Account("astromonkey", 'Masonman0123!')
-status = client.get_portfolio_status()
-print(status.account_val)
+client = Investopedia.Account("astromonkey", 'Masonman0123!')
+
+print(client.get_account_overview)
+
+#print(client)
