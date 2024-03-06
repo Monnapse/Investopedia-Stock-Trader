@@ -10,8 +10,6 @@ import time
 
 # DRIVER
 options = Options() 
-#options.headless = True
-#options.add_argument("--headless=new")
 options.add_experimental_option("detach", True)
 driver = webdriver.Chrome(options=options) 
 
@@ -41,7 +39,13 @@ class Account:
 
         time.sleep(5) # Wait for page to be loaded
 
+    def set_headless():
+        """
+        Allows you to do tasks without having to open chrome.
+        """
+        options.headless = True
+        options.add_argument("--headless=new")
     def get_account_overview(self):
         self.new_page(self.portfolio_url)
-
+        print(driver.page_source)
         return driver.find_element(By.CSS_SELECTOR, 'div[data-cy="account-value-text"]').text
