@@ -4,6 +4,8 @@
 import requests
 import csv
 import pandas
+import yfinance as yf
+import time
 
 #import Investopedia
 
@@ -13,13 +15,11 @@ import pandas
 #print(client.get_account_overview())
 #print(client.trade("dell", Investopedia.Action.buy, 5))
 
-#with open('stocks.csv', mode ='r')as file:
-#  csvFile = csv.DictReader(file)
-#  for row in csvFile:
-#        print(row["Symbol"])
-#        
-url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo'
-r = requests.get(url)
-data = r.json()
-
-print(data)
+with open('stocks.csv', mode ='r')as file:
+  csvFile = csv.DictReader(file)
+  for row in csvFile:
+        print(yf.Ticker(row["Symbol"]).fast_info.last_price)
+        time.sleep(0.1)
+        
+#dell = yf.Ticker("DELL")
+#print(dell.fast_info.last_price)
