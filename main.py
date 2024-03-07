@@ -1,13 +1,17 @@
 """
     Stock Link - http://www.nasdaq.com/screening/
 """
-import requests
-import csv
+#import requests
+#import csv
 #import pandas
-import yfinance as yf
-import time
-from bs4 import BeautifulSoup
+#import yfinance as yf
+#import time
+#from bs4 import BeautifulSoup
 #import StockLookup
+import StockLookup
+
+print(StockLookup.get_stock("DELL")
+      )
 
 #kroger = stockquotes.Stock('KR')
 #print(kroger.current_price)

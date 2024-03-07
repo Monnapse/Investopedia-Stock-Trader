@@ -4,39 +4,42 @@
     Lookup stock info using yahoo finance
 """
 
-from selenium import webdriver 
-from selenium.webdriver.chrome.options import Options 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select, WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
 import time
-from enum import Enum
+import ProxyApiManager as PAM
 
 wait_time = 20
-yahoo_base_urls = [
+
+lookup_sub = "stock_lookup"
+
+yahoo_proxy = PAM.NewProxyApi("yahoo")
+yahoo_proxy.add_base_urls([
     "https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com"
-]
-lookup_url = "/v8/finance/chart/%s?period1=%s&period2=%s"
-
-# DRIVER
-options = Options() 
-#options.headless = True
-#options.add_argument("--headless=new")
-options.add_experimental_option("detach", True)
-driver = webdriver.Chrome(options=options) 
-web_driver_waiter = WebDriverWait(driver, wait_time)
-
-def new_page(url: str):
-        driver.get(base_url + url)
-
-        time.sleep(1) # Wait for page to be loaded
+])
+yahoo_proxy.add_sub(lookup_sub)
+yahoo_proxy.add_sub_url(lookup_sub, "/v8/finance/chart/{symbol}?period1={timestamp}&period2={timestamp}")
 
 def get_stock(symbol):
     """
         Gets just the basic info about the stock
     """
-    new_page(ticker_lookup+symbol)
 
+    # request
+    timestamp = int(time.time())
+    #print(yahoo_proxy.get_full_url(lookup_sub).format(symbol=symbol, timestamp=timestamp))
+    url = yahoo_proxy.get_full_url(lookup_sub).format(symbol=symbol, timestamp=timestamp)
+    print(url)
+    headers = {
+        "User-Agent": "curl/7.68.0"
+    }
+    response = requests.get(url, headers=headers)
+    #print(response.headers)
+    #print(response.content)
+    response_json = response.json()
+    #print(response_json["chart"]["result"][0]["meta"]["regularMarketPrice"])
+    data = response_json["chart"]["result"][0]["meta"]
     return {
-        "last_price": web_driver_waiter.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'fin-streamer[data-field="regularMarketPrice"]'))).text
+        "market_price":  data["regularMarketPrice"],
+        "currency": data["currency"],
+        "exchange_name": data["exchangeName"],
     }
