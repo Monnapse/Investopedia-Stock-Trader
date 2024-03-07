@@ -1,5 +1,7 @@
 """
     Stock Link - http://www.nasdaq.com/screening/
+
+    9:30 AM - 4:00 PM
 """
 #import requests
 #import csv
@@ -10,8 +12,7 @@
 #import StockLookup
 import StockLookup
 
-print(StockLookup.get_stock("DELL")
-      )
+print(StockLookup.get_stock("DELL"))
 
 #kroger = stockquotes.Stock('KR')
 #print(kroger.current_price)
