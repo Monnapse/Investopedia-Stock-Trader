@@ -37,7 +37,13 @@ def get_stock(symbol):
     #print(response.content)
     response_json = response.json()
     #print(response_json["chart"]["result"][0]["meta"]["regularMarketPrice"])
-    data = response_json["chart"]["result"][0]["meta"]
+    if response_json == None or response_json == 'NoneType': return None
+    
+    result = response_json["chart"]["result"]
+    
+    if result == None: return
+
+    data = result[0]["meta"]
     return {
         "market_price":  data["regularMarketPrice"],
         "currency": data["currency"],

@@ -16,8 +16,8 @@ wait_time = 20
 # DRIVER
 options = Options() 
 
-#options.headless = True
-#options.add_argument("--headless=new")
+options.headless = True
+options.add_argument("--headless=new")
 
 options.add_experimental_option("detach", True)
 driver = webdriver.Chrome(options=options) 
@@ -65,9 +65,12 @@ class Account:
                 self.__init__(username, password)
         except:
             pass
+        print("Succesfully logged in")
 
     def new_page(self, url: str):
         driver.get(self.base_url + url)
+
+        print("Loaded New page")
 
         time.sleep(1) # Wait for page to be loaded
 
@@ -95,6 +98,14 @@ class Account:
             session.click()
         except:
             pass
+        print("Successfuly change game session to " + session_name)
+
+    def click_on_element_BY(self, by: str = By.ID, value: str = None):
+        """
+            Click on element with no errors and always works
+        """
+        element = web_driver_waiter.until(EC.element_to_be_clickable((by, value)))
+        driver.execute_script("arguments[0].click()", element)
 
     #def get_stocks
     def trade(self, symbol: str, action: Action, quantity: int, order_type: OrderType=OrderType.market, price=0, duration:Duration=Duration.day_only):
@@ -125,12 +136,14 @@ class Account:
         if action.value == 1:
             # Buying
             #driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[4]/div/div[1]').click()
-            web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[2]/div/div[1]'))).click()
+            #web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[1]'))).click()
+            self.click_on_element_BY(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[1]')
         elif action.value == 2:
             # Selling
             #driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[4]/div/div[2]').click()
-            print("selling")
-            web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[2]/div/div[2]'))).click()
+            #rint("selling")
+            #web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[2]'))).click()
+            self.click_on_element_BY(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[2]')
 
         # QUANTITY
         quantity_input = web_driver_waiter.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[role="select-quantity"]')))#driver.find_element(By.CSS_SELECTOR, 'input[role="select-quantity"]')
@@ -167,9 +180,10 @@ class Account:
         # driver.find_element(By.XPATH, '//*[@id="app"]/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[3]/div/div[2]/button').click()
         #
         # time.sleep(2)
-        preview_button = web_driver_waiter.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-cy="preview-button"]')))
-        #preview_button.click()
-        driver.execute_script("arguments[0].click()", preview_button)
+        self.click_on_element_BY(By.CSS_SELECTOR, 'button[data-cy="preview-button"]')
+        #preview_button = web_driver_waiter.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-cy="preview-button"]')))
+        ##preview_button.click()
+        #driver.execute_script("arguments[0].click()", preview_button)
 
         time.sleep(1)
         try:
