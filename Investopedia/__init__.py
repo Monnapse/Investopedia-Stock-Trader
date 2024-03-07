@@ -16,8 +16,8 @@ wait_time = 20
 # DRIVER
 options = Options() 
 
-options.headless = True
-options.add_argument("--headless=new")
+#options.headless = True
+#options.add_argument("--headless=new")
 
 options.add_experimental_option("detach", True)
 driver = webdriver.Chrome(options=options) 
@@ -121,16 +121,16 @@ class Account:
         # ACTION
         #action_input = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div/div[1]').click()
         web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div/div[1]'))).click()
-        action_list = web_driver_waiter.until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[1]/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div')))
+        #action_list = web_driver_waiter.until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[1]/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div')))
         if action.value == 1:
             # Buying
             #driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[4]/div/div[1]').click()
-            action_list.find_element(By.XPATH, "div[1]").click()
+            web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[2]/div/div[1]'))).click()
         elif action.value == 2:
             # Selling
             #driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[4]/div/div[2]').click()
             print("selling")
-            action_list.find_element(By.XPATH, "div[2]").click()
+            web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[2]/div/div[2]'))).click()
 
         # QUANTITY
         quantity_input = web_driver_waiter.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[role="select-quantity"]')))#driver.find_element(By.CSS_SELECTOR, 'input[role="select-quantity"]')
