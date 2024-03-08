@@ -15,12 +15,14 @@ wait_time = 20
 
 # DRIVER
 options = Options() 
-
-options.headless = True
-options.add_argument("--headless=new")
-
+#options.headless = True
+#options.add_argument("--headless=new")
+options.add_argument("--window-size=1920,1080")
+options.add_argument('window-size=1920x1080')
 options.add_experimental_option("detach", True)
+
 driver = webdriver.Chrome(options=options) 
+driver.set_window_size(1920, 1080)
 web_driver_waiter = WebDriverWait(driver, wait_time)
 
 class Duration(Enum):
@@ -35,6 +37,18 @@ class OrderType(Enum):
 class Action(Enum):
     buy = 1
     sell = 2
+
+class PortfolioStock:
+    symbol = None
+    description = None
+    current_price = None
+    day_change_dollor = None
+    day_change_percent = None
+    purchase_price = None
+    quantity = None
+    total_value = None
+    total_change_dollar = None
+    total_change_percent = None
 
 class Account:
     def __init__(self, username: str, password:str):
@@ -92,7 +106,7 @@ class Account:
         #self.new_page("/simulator/trade/stocks")
         web_driver_waiter.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-cy="portfolio-select"]'))).click()
         #/html/body/div[1]/div/div/div[2]/main/div/div[1]/div/div[1]/div[2]/div/div/div/div
-        list = web_driver_waiter.until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[1]/div/div[5]/div/div/div/div')))
+        list = web_driver_waiter.until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[1]/div/div[1]/div[2]/div/div/div/div')))
         try:
             session = list.find_element(By.XPATH, f"//*[contains(text(), '{session_name}')]")
             session.click()
@@ -107,7 +121,35 @@ class Account:
         element = web_driver_waiter.until(EC.element_to_be_clickable((by, value)))
         driver.execute_script("arguments[0].click()", element)
 
-    #def get_stocks
+    def get_stocks(self) -> list[PortfolioStock]:
+        """
+            Gets all stocks user owns on current game session.
+        """
+
+        stocks_list = []
+
+        self.new_page(self.portfolio_url)
+
+        time.sleep(1)
+        web_driver_waiter.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-cy="holdings-table"]'))) # Wait for table to be loaded
+        
+        stocks_list_element = driver.find_elements(By.XPATH, '//*[@id="app"]/div/main/div/div[2]/div[2]/div[2]/div[3]/div[2]/div[1]/div/div[2]/div/div/table/tbody/tr')
+        for stock in stocks_list_element:
+            portfolio_stock_data = PortfolioStock()
+
+            portfolio_stock_data.symbol = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="symbol"]').text
+            portfolio_stock_data.description = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="description"]').text
+            portfolio_stock_data.current_price = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="current-price"]').text 
+            portfolio_stock_data.day_change_dollor, portfolio_stock_data.day_change_percent = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="day-gain-dollar"]').text.replace("(","").replace(")","").replace("%","").replace("$","").split("\n")
+            portfolio_stock_data.purchase_price = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="purchase-price"]').text
+            portfolio_stock_data.quantity = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="quantity"]').text
+            portfolio_stock_data.total_value = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="total-value"]').text
+            portfolio_stock_data.total_change_dollar, portfolio_stock_data.total_change_percent = stock.find_element(By.CSS_SELECTOR, 'div[data-cy="total-gain-dollar"]').text.replace("(","").replace(")","").replace("%","").replace("$","").split("\n")
+
+            stocks_list.append(portfolio_stock_data)
+
+        return stocks_list
+
     def trade(self, symbol: str, action: Action, quantity: int, order_type: OrderType=OrderType.market, price=0, duration:Duration=Duration.day_only):
         """
             Buys stock
@@ -131,19 +173,19 @@ class Account:
 
         # ACTION
         #action_input = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div/div[1]').click()
-        web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div/div[1]'))).click()
+        web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[1]/main/div/div[2]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div/div[1]'))).click()
         #action_list = web_driver_waiter.until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[1]/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div')))
         if action.value == 1:
             # Buying
             #driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[4]/div/div[1]').click()
             #web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[1]'))).click()
-            self.click_on_element_BY(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[1]')
+            self.click_on_element_BY(By.XPATH, '/html/body/div[1]/div/div/div[3]/div/div[1]')
         elif action.value == 2:
             # Selling
             #driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[4]/div/div[2]').click()
             #rint("selling")
             #web_driver_waiter.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[2]'))).click()
-            self.click_on_element_BY(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[3]/div[2]/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/div/div[2]/div/div[2]')
+            self.click_on_element_BY(By.XPATH, '/html/body/div[1]/div/div/div[3]/div/div[2]')
 
         # QUANTITY
         quantity_input = web_driver_waiter.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[role="select-quantity"]')))#driver.find_element(By.CSS_SELECTOR, 'input[role="select-quantity"]')

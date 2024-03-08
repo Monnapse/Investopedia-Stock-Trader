@@ -11,6 +11,8 @@ import csv
 import StockLookup
 from StockLookup.tms import time, time_type, time_direction
 import time as thread
+import requests
+
 #from requests_oauth2client import BearerAuth
 
 #print(requests.get("https://query1.finance.yahoo.com/v10/finance/quoteSummary/DELL?formatted=true&amp;modules=earnings").content)
@@ -30,20 +32,30 @@ import time as thread
 #response = requests.post("https://www.investopedia.com/auth/realms/investopedia/protocol/openid-connect/token", headers=headers, data=payload)
 #print(response.content)
 
-#import Investopedia
 
-#client = Investopedia.Account("astromonkey", 'Masonman0123!')
 
+
+import Investopedia
+
+client = Investopedia.Account("astromonkey", 'Masonman0123!')
+client.trade("dell", Investopedia.Action.buy, 3)
 #print(client.change_game_session("Investopedia Trading Game"))
-#print(client.get_account_overview())
+#for stock in client.get_stocks():
+#    print(stock.symbol, stock.quantity)
+#    #print("Symbol: %s, Description %s, Current Price: $%s, Day Change: $%s \%%s, Purchase Price: $%s, Quantity: %s, Total Value: $%s, Total Gain: $%s /%%s, ".format(stock.symbol, stock.description, stock.current_price, stock.day_change_dollor, stock.day_change_percent, stock.purchase_price, stock.quantity, stock.total_value, stock.total_change_dollar, stock.total_change_percent))
+
+#e = '$1.00\n(0.17%)'
+#d,p = e.replace("(","").replace(")","").replace("%","").replace("$","").split("\n")
+#print()
+
 #print(1709859599 - datetime.timedelta(weeks = 52.1429).days)
 
 #print(time.time(1, time_type.year, time_direction.away))
 #print(time.now())
 
-#print(StockLookup.stock_lookup("NVDA", time.time(1, time_type.year, time_direction.before)).analyst_rating)
-
-with open('stocks.csv', mode ='r')as file:
+#print(StockLookup.stock_lookup("DELL", time.time(1, time_type.year, time_direction.before)).quarterly_pe_ratio)
+"""
+with open('stocks.csv', mode ='r') as file:
   csvFile = csv.DictReader(file)
   for row in csvFile:
         #print(yf.Ticker(row["Symbol"]).fast_info.last_price)
@@ -52,10 +64,9 @@ with open('stocks.csv', mode ='r')as file:
         #print(stock_info.last_price)
         stock_info = StockLookup.stock_lookup(symbol, time.time(1, time_type.year, time_direction.before))#StockLookup.Stock(symbol)#StockLookup.get_stock(symbol)
         if stock_info:
-            print(stock_info.analyst_rating)
+            print(stock_info.quarterly_pe_ratio)
         #if stock_info and stock_info != None and stock_info.market_price > 1 and stock_info.market_price < 1000:
         #    client.trade(symbol, Investopedia.Action.buy, 1)
 
         thread.sleep(0.1)
-        
-        
+"""
