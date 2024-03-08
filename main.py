@@ -38,11 +38,10 @@ import requests
 import Investopedia
 
 client = Investopedia.Account("astromonkey", 'Masonman0123!')
-client.trade("dell", Investopedia.Action.buy, 3)
-#print(client.change_game_session("Investopedia Trading Game"))
-#for stock in client.get_stocks():
-#    print(stock.symbol, stock.quantity)
-#    #print("Symbol: %s, Description %s, Current Price: $%s, Day Change: $%s \%%s, Purchase Price: $%s, Quantity: %s, Total Value: $%s, Total Gain: $%s /%%s, ".format(stock.symbol, stock.description, stock.current_price, stock.day_change_dollor, stock.day_change_percent, stock.purchase_price, stock.quantity, stock.total_value, stock.total_change_dollar, stock.total_change_percent))
+client.change_game_session("Investopedia Trading Game")
+
+for stock in client.get_stocks():
+    print(stock.symbol, stock.quantity)
 
 #e = '$1.00\n(0.17%)'
 #d,p = e.replace("(","").replace(")","").replace("%","").replace("$","").split("\n")
