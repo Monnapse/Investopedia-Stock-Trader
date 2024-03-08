@@ -10,7 +10,7 @@
 import csv
 import StockLookup
 from StockLookup.tms import time, time_type, time_direction
-import requests
+import time as thread
 #from requests_oauth2client import BearerAuth
 
 #print(requests.get("https://query1.finance.yahoo.com/v10/finance/quoteSummary/DELL?formatted=true&amp;modules=earnings").content)
@@ -41,8 +41,8 @@ import requests
 #print(time.time(1, time_type.year, time_direction.away))
 #print(time.now())
 
-print(StockLookup.stock_lookup("dell", time.time(1, time_type.year, time_direction.before)).quarterly_pe_ratio)
-"""
+#print(StockLookup.stock_lookup("NVDA", time.time(1, time_type.year, time_direction.before)).analyst_rating)
+
 with open('stocks.csv', mode ='r')as file:
   csvFile = csv.DictReader(file)
   for row in csvFile:
@@ -50,12 +50,12 @@ with open('stocks.csv', mode ='r')as file:
         symbol = row["Symbol"]
         #stock_info = yf.Ticker(row["Symbol"]).fast_info
         #print(stock_info.last_price)
-        stock_info = StockLookup.Stock(symbol)#StockLookup.get_stock(symbol)
+        stock_info = StockLookup.stock_lookup(symbol, time.time(1, time_type.year, time_direction.before))#StockLookup.Stock(symbol)#StockLookup.get_stock(symbol)
         if stock_info:
-            print(stock_info.market_price)
+            print(stock_info.analyst_rating)
         #if stock_info and stock_info != None and stock_info.market_price > 1 and stock_info.market_price < 1000:
         #    client.trade(symbol, Investopedia.Action.buy, 1)
 
-        time.sleep(0.1)
+        thread.sleep(0.1)
         
-        """
+        
