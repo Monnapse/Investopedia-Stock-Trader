@@ -1,25 +1,62 @@
 """
     StockLookup
     Made by Monnapse
-    Lookup stock info using yahoo finance
+    Lookup stock info using yahoo finance, nasdaq
+
+    market time: https://query1.finance.yahoo.com/v6/finance/markettime?formatted=true&key=finance&lang=en-US&region=US
+    get crumb: https://query1.finance.yahoo.com/v1/test/getcrumb
 """
 
 import requests
 import time
 import ProxyApiManager as PAM
+import datetime
+from enum import Enum
 
 wait_time = 20
 
-lookup_sub = "stock_lookup"
+basic_lookup_sub = "basic_lookup_sub"
+advanced_lookup_sub = "advanced_lookup_sub"
 
 yahoo_proxy = PAM.NewProxyApi("yahoo")
 yahoo_proxy.add_base_urls([
     "https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com"
 ])
-yahoo_proxy.add_sub(lookup_sub)
-yahoo_proxy.add_sub_url(lookup_sub, "/v8/finance/chart/{symbol}?period1={timestamp}&period2={timestamp}")
+yahoo_proxy.add_sub(basic_lookup_sub)
+yahoo_proxy.add_sub_url(basic_lookup_sub, "/v8/finance/chart/{symbol}?period1={period1}&period2={period2}")
+yahoo_proxy.add_sub_url(basic_lookup_sub, "/v7/finance/chart/{symbol}?period1={period1}&period2={period2}")
 
-def get_stock(symbol):
+yahoo_proxy.add_sub(advanced_lookup_sub)
+yahoo_proxy.add_sub_url(advanced_lookup_sub, "/ws/fundamentals-timeseries/v1/finance/timeseries/{symbol}?merge=false&padTimeSeries=true&period1={period1}&period2={period2}&type=quarterlyMarketCap%2CtrailingMarketCap%2CquarterlyEnterpriseValue%2CtrailingEnterpriseValue%2CquarterlyPeRatio%2CtrailingPeRatio%2CquarterlyForwardPeRatio%2CtrailingForwardPeRatio%2CquarterlyPegRatio%2CtrailingPegRatio%2CquarterlyPsRatio%2CtrailingPsRatio%2CquarterlyPbRatio%2CtrailingPbRatio%2CquarterlyEnterprisesValueRevenueRatio%2CtrailingEnterprisesValueRevenueRatio%2CquarterlyEnterprisesValueEBITDARatio%2CtrailingEnterprisesValueEBITDARatio&lang=en-US&region=US")
+
+class basic_stock_info:
+    market_price = int
+    currency = str
+    exchange_name = str
+
+class stock_info:
+    symbol = str
+    basic = dict
+    quarterly_market_cap = str
+    trailing_market_cap = str
+    quarterly_enterprise_value = str
+    trailing_enterprise_value = str
+    quarterly_pe_ratio = str
+    trailing_pe_ratio = str
+    quarterly_forward_pe_ratio = str
+    trailing_forward_pe_ratio = str
+    quarterly_peg_ratio = str
+    trailing_peg_ratio = str
+    quarterly_ps_ratio = str
+    trailing_ps_ratio = str
+    quarterly_pb_ratio = str
+    trailing_pb_ratio = str
+    quarterly_enterprises_value_revenue_ratio = str
+    trailing_enterprises_value_revenue_ratio = str
+    quarterly_enterprises_value_ebitda_ratio = str
+    trailing_enterprises_value_ebitda_ratio = str
+
+def basic_stock_lookup(symbol) -> basic_stock_info:
     """
         Gets just the basic info about the stock
     """
@@ -27,7 +64,7 @@ def get_stock(symbol):
     # request
     timestamp = int(time.time())
     #print(yahoo_proxy.get_full_url(lookup_sub).format(symbol=symbol, timestamp=timestamp))
-    url = yahoo_proxy.get_full_url(lookup_sub).format(symbol=symbol, timestamp=timestamp)
+    url = yahoo_proxy.get_full_url(basic_lookup_sub).format(symbol=symbol, period1=timestamp, period2=timestamp)
     print(url)
     headers = {
         "User-Agent": "curl/7.68.0"
@@ -44,8 +81,87 @@ def get_stock(symbol):
     if result == None: return
 
     data = result[0]["meta"]
-    return {
-        "market_price":  data["regularMarketPrice"],
-        "currency": data["currency"],
-        "exchange_name": data["exchangeName"],
+    #return {
+    #    "market_price":  data["regularMarketPrice"],
+    #    "currency": data["currency"],
+    #    "exchange_name": data["exchangeName"],
+    #}
+
+    stock_info = basic_stock_info()
+    stock_info.market_price = data["regularMarketPrice"]
+    stock_info.currency = data["currency"]
+    stock_info.exchange_name = data["exchangeName"]
+
+    return stock_info
+
+def format_camel_case(string: str):
+    new_string = ""
+    for i in list(string):
+        if i.isupper():
+            new_string = new_string + "_" + i.lower()
+        else:
+            new_string = new_string + i
+    return new_string
+
+def stock_lookup(symbol, period1: int=None, period2: int=None) -> stock_info:
+    """
+        More advanced stock lookup
+        https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/DELL?merge=false&padTimeSeries=true&period1=1694127600&period2=1709859599&type=quarterlyMarketCap%2CtrailingMarketCap%2CquarterlyEnterpriseValue%2CtrailingEnterpriseValue%2CquarterlyPeRatio%2CtrailingPeRatio%2CquarterlyForwardPeRatio%2CtrailingForwardPeRatio%2CquarterlyPegRatio%2CtrailingPegRatio%2CquarterlyPsRatio%2CtrailingPsRatio%2CquarterlyPbRatio%2CtrailingPbRatio%2CquarterlyEnterprisesValueRevenueRatio%2CtrailingEnterprisesValueRevenueRatio%2CquarterlyEnterprisesValueEBITDARatio%2CtrailingEnterprisesValueEBITDARatio&lang=en-US&region=US
+        
+        Parameters:
+            period1 (int) : Grabs stock info starting from this time.
+            period2 (int) : Grabs stock info ending at this time.
+        
+        Includes the following info
+            * market price
+            * currency
+            * exchange name
+            * quarterly market cap
+            * trailing market cap
+            * quarterly enterprise value
+            * trailing enterprise value
+            * quarterly pe ratio
+            * trailing pe Ratio
+            * quarterly forward pe ratio
+            * trailing forward peratio
+            * quarterly Pegratio
+            * trailing peg ratio
+            * quarterly ps ratio
+            * trailing ps ratio
+            * quarterly pb ratio
+            * trailing pb ratio
+            * quarterly enterprises value revenue ratio
+            * trailing enterprises value revenue ratio
+            * quarterly enterprises value EBITDA ratio
+            * trailing enterprises value EBITDA ratio
+    """
+    # Set basic values
+    stock = stock_info()
+    stock.symbol = symbol
+    stock.basic = basic_stock_lookup(symbol)
+
+    # Check if period1 or period2 are none if so then set to current time
+    current_timestamp = int(time.time())
+    if period1 == None:
+        period1 = current_timestamp
+    if period2 == None:
+        period2 = current_timestamp
+
+    url = yahoo_proxy.get_full_url(advanced_lookup_sub).format(symbol=symbol, period1=period1, period2=period2)
+    headers = {
+        "User-Agent": "curl/7.68.0"
     }
+    response = requests.get(url, headers=headers)
+    response_json = response.json()
+    if response_json == None or response_json == 'NoneType': return None
+    results = response_json["timeseries"]["result"]
+    for i in results:
+        stock_info_meta = i["meta"]
+        meta_type: str = i["meta"]["type"][0]
+        
+        if i.get(meta_type):
+            meta_type_list = i[meta_type]
+            meta_value = meta_type_list[len(meta_type_list)-1]["reportedValue"]["fmt"]
+            setattr(stock, format_camel_case(meta_type), meta_value)
+
+    return stock
