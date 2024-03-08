@@ -2,6 +2,7 @@
     Stock Link - http://www.nasdaq.com/screening/
 
     MARKET TIME MST - 7:30 AM	2:00 PM
+    market time: https://query1.finance.yahoo.com/v6/finance/markettime?formatted=true&key=finance&lang=en-US&region=US
 
     Stock Algorithm
 """
@@ -12,7 +13,7 @@ from StockLookup.tms import time, time_type, time_direction
 import requests
 #from requests_oauth2client import BearerAuth
 
-print(requests.get("https://query1.finance.yahoo.com/v10/finance/quoteSummary/DELL?formatted=true&amp;modules=earnings").content)
+#print(requests.get("https://query1.finance.yahoo.com/v10/finance/quoteSummary/DELL?formatted=true&amp;modules=earnings").content)
 
 #payload = {
 #    "code": "a83361f6-cabd-44e8-85a8-be188ca24be9.4bf7bf08-9f08-4746-aeef-44fd00350966.12bddc88-7575-48ef-99f9-f196203e4054",
@@ -40,7 +41,7 @@ print(requests.get("https://query1.finance.yahoo.com/v10/finance/quoteSummary/DE
 #print(time.time(1, time_type.year, time_direction.away))
 #print(time.now())
 
-#print(StockLookup.stock_lookup("dell", time_type.year).)
+print(StockLookup.stock_lookup("dell", time_type.year).analyst_rating)
 """
 with open('stocks.csv', mode ='r')as file:
   csvFile = csv.DictReader(file)

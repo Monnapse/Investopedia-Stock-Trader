@@ -3,8 +3,8 @@
     Made by Monnapse
     Lookup stock info using yahoo finance, nasdaq
 
-    market time: https://query1.finance.yahoo.com/v6/finance/markettime?formatted=true&key=finance&lang=en-US&region=US
     get crumb: https://query1.finance.yahoo.com/v1/test/getcrumb
+    nasdaq analyst rating: https://api.nasdaq.com/api/analyst/DELL/ratings
 """
 
 import requests
@@ -17,17 +17,23 @@ wait_time = 20
 
 basic_lookup_sub = "basic_lookup_sub"
 advanced_lookup_sub = "advanced_lookup_sub"
+analyst_rating = "analyst_rating"
 
-yahoo_proxy = PAM.NewProxyApi("yahoo")
-yahoo_proxy.add_base_urls([
+yahoo_api = PAM.NewProxyApi("yahoo")
+yahoo_api.add_base_urls([
     "https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com"
 ])
-yahoo_proxy.add_sub(basic_lookup_sub)
-yahoo_proxy.add_sub_url(basic_lookup_sub, "/v8/finance/chart/{symbol}?period1={period1}&period2={period2}")
-yahoo_proxy.add_sub_url(basic_lookup_sub, "/v7/finance/chart/{symbol}?period1={period1}&period2={period2}")
+yahoo_api.add_sub(basic_lookup_sub)
+yahoo_api.add_sub_url(basic_lookup_sub, "/v8/finance/chart/{symbol}?period1={period1}&period2={period2}")
+yahoo_api.add_sub_url(basic_lookup_sub, "/v7/finance/chart/{symbol}?period1={period1}&period2={period2}")
 
-yahoo_proxy.add_sub(advanced_lookup_sub)
-yahoo_proxy.add_sub_url(advanced_lookup_sub, "/ws/fundamentals-timeseries/v1/finance/timeseries/{symbol}?merge=false&padTimeSeries=true&period1={period1}&period2={period2}&type=quarterlyMarketCap%2CtrailingMarketCap%2CquarterlyEnterpriseValue%2CtrailingEnterpriseValue%2CquarterlyPeRatio%2CtrailingPeRatio%2CquarterlyForwardPeRatio%2CtrailingForwardPeRatio%2CquarterlyPegRatio%2CtrailingPegRatio%2CquarterlyPsRatio%2CtrailingPsRatio%2CquarterlyPbRatio%2CtrailingPbRatio%2CquarterlyEnterprisesValueRevenueRatio%2CtrailingEnterprisesValueRevenueRatio%2CquarterlyEnterprisesValueEBITDARatio%2CtrailingEnterprisesValueEBITDARatio&lang=en-US&region=US")
+yahoo_api.add_sub(advanced_lookup_sub)
+yahoo_api.add_sub_url(advanced_lookup_sub, "/ws/fundamentals-timeseries/v1/finance/timeseries/{symbol}?merge=false&padTimeSeries=true&period1={period1}&period2={period2}&type=quarterlyMarketCap%2CtrailingMarketCap%2CquarterlyEnterpriseValue%2CtrailingEnterpriseValue%2CquarterlyPeRatio%2CtrailingPeRatio%2CquarterlyForwardPeRatio%2CtrailingForwardPeRatio%2CquarterlyPegRatio%2CtrailingPegRatio%2CquarterlyPsRatio%2CtrailingPsRatio%2CquarterlyPbRatio%2CtrailingPbRatio%2CquarterlyEnterprisesValueRevenueRatio%2CtrailingEnterprisesValueRevenueRatio%2CquarterlyEnterprisesValueEBITDARatio%2CtrailingEnterprisesValueEBITDARatio&lang=en-US&region=US")
+
+nasdaq_api = PAM.NewProxyApi("nasdaq")
+nasdaq_api.add_base("https://api.nasdaq.com")
+nasdaq_api.add_sub(analyst_rating)
+nasdaq_api.add_sub_url(analyst_rating, "/api/analyst/{symbol}/ratings")
 
 class basic_stock_info:
     market_price = int
@@ -55,6 +61,7 @@ class stock_info:
     trailing_enterprises_value_revenue_ratio = str
     quarterly_enterprises_value_ebitda_ratio = str
     trailing_enterprises_value_ebitda_ratio = str
+    analyst_rating = str
 
 def basic_stock_lookup(symbol) -> basic_stock_info:
     """
@@ -63,8 +70,8 @@ def basic_stock_lookup(symbol) -> basic_stock_info:
 
     # request
     timestamp = int(time.time())
-    #print(yahoo_proxy.get_full_url(lookup_sub).format(symbol=symbol, timestamp=timestamp))
-    url = yahoo_proxy.get_full_url(basic_lookup_sub).format(symbol=symbol, period1=timestamp, period2=timestamp)
+    #print(yahoo_api.get_full_url(lookup_sub).format(symbol=symbol, timestamp=timestamp))
+    url = yahoo_api.get_full_url(basic_lookup_sub).format(symbol=symbol, period1=timestamp, period2=timestamp)
     print(url)
     headers = {
         "User-Agent": "curl/7.68.0"
@@ -147,21 +154,39 @@ def stock_lookup(symbol, period1: int=None, period2: int=None) -> stock_info:
     if period2 == None:
         period2 = current_timestamp
 
-    url = yahoo_proxy.get_full_url(advanced_lookup_sub).format(symbol=symbol, period1=period1, period2=period2)
+
+    # Yahoo Finance data
+    url = yahoo_api.get_full_url(advanced_lookup_sub).format(symbol=symbol, period1=period1, period2=period2)
     headers = {
         "User-Agent": "curl/7.68.0"
     }
     response = requests.get(url, headers=headers)
     response_json = response.json()
-    if response_json == None or response_json == 'NoneType': return None
-    results = response_json["timeseries"]["result"]
-    for i in results:
-        stock_info_meta = i["meta"]
-        meta_type: str = i["meta"]["type"][0]
-        
-        if i.get(meta_type):
-            meta_type_list = i[meta_type]
-            meta_value = meta_type_list[len(meta_type_list)-1]["reportedValue"]["fmt"]
-            setattr(stock, format_camel_case(meta_type), meta_value)
+    if response_json != None and response_json != 'NoneType':
+        results = response_json["timeseries"]["result"]
+        for i in results:
+            stock_info_meta = i["meta"]
+            meta_type: str = i["meta"]["type"][0]
 
+            if i.get(meta_type):
+                meta_type_list = i[meta_type]
+                meta_value = meta_type_list[len(meta_type_list)-1]["reportedValue"]["fmt"]
+                setattr(stock, format_camel_case(meta_type), meta_value)
+
+    # Nasdaq Data
+    url = nasdaq_api.get_full_url(analyst_rating).format(symbol=symbol)
+
+    analyst_headers = {
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "User-Agent":"Java-http-client/"
+    }
+    response = requests.get(url, headers=analyst_headers)
+
+    response_json = response.json()
+    if response_json != None and response_json != 'NoneType':
+        data = response_json["data"]
+        if data:
+            stock_info.analyst_rating = data["meanRatingType"]
+            
     return stock
