@@ -41,7 +41,7 @@ import requests
 #print(time.time(1, time_type.year, time_direction.away))
 #print(time.now())
 
-print(StockLookup.stock_lookup("dell", time_type.year).analyst_rating)
+print(StockLookup.stock_lookup("dell", time.time(1, time_type.year, time_direction.before)).quarterly_pe_ratio)
 """
 with open('stocks.csv', mode ='r')as file:
   csvFile = csv.DictReader(file)
