@@ -107,5 +107,5 @@ class StockManager():
         #print(self.tickers)
             
     def is_market_open(self):
-        #return timeChecker.is_time_between(time2(7,30), time2(14,00))
-        return timeChecker.is_time_between(time2(7,30), time2(18,00))
+        return timeChecker.is_time_between(time2(7,30), time2(14,00))
+        #return timeChecker.is_time_between(time2(7,30), time2(18,00))
