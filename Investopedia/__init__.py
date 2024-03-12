@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+#from selenium.webdriver.chrome.service import Service # FOR SPECIFIED DIRECTORY
 import time
 from enum import Enum
 
@@ -21,6 +22,9 @@ options.add_argument("--window-size=1920,1080")
 options.add_argument('window-size=1920x1080')
 options.add_experimental_option("detach", True)
 
+#service = Service(executable_path="") # FOR SPECIFIED DIRECTORY
+
+#driver = webdriver.Chrome(options=options, service=service)  # FOR SPECIFIED DIRECTORY
 driver = webdriver.Chrome(options=options) 
 driver.set_window_size(1920, 1080)
 web_driver_waiter = WebDriverWait(driver, wait_time)

@@ -15,11 +15,13 @@ from StockAlgorithm import StockAlgorithm, StockAlgorithmMethods
 import Investopedia
 import random
 from StocksManager import StockManager, csvReader
+import os
 
 SA = StockAlgorithm(StockAlgorithmMethods.simple)
 
 #client = ""
-client = Investopedia.Account("astromonkey", 'Masonman0123!')
+
+client = Investopedia.Account(os.environ["InvestopediaUsername"], os.environ["InvestopediaPassword"])
 client.change_game_session("Investopedia Trading Game")
 
 # SETTINGS
