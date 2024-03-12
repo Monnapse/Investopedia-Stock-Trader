@@ -61,17 +61,20 @@ class StockManager():
                 self.stocks_owned = self.client.get_stocks()
                 self.account_balance = float(self.client.get_account_overview()["cash"].replace("$", "").replace(",", ""))
                 print("Account balance is", self.account_balance)
+                
                 iteration = 0
 
                 if sell_iterations >= self.sell_check_iterations: # If iterations have gone through self.sell_check_iterations then check if sell needed
+                    sell_iterations = 0
                     print("Checking all owned stocks")
                     for sell_ticker_info in self.stocks_owned:
                         self.stock_algorithm.set_earnings(float(sell_ticker_info.total_change_percent))
                         should_sell = self.stock_algorithm.should_sell()
                         print(should_sell)
                         if should_sell:
-                            print("Selling",ticker)
-                            self.client.trade(ticker, Action.sell, sell_ticker_info.quantity or 1)
+                            print("Selling",sell_ticker_info.symbol)
+                            self.client.trade(sell_ticker_info.symbol, Action.sell, sell_ticker_info.quantity or 1)
+                            thread.sleep(1)
 
             stock_owned = self.own_stock(ticker)
 
@@ -120,5 +123,5 @@ class StockManager():
         #print(self.tickers)
             
     def is_market_open(self):
-        #return timeChecker.is_time_between(time2(7,30), time2(14,00))
-        return timeChecker.is_time_between(time2(7,30), time2(18,00))
+        return timeChecker.is_time_between(time2(7,30), time2(14,00))
+        #return timeChecker.is_time_between(time2(7,30), time2(18,00))
