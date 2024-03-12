@@ -46,14 +46,20 @@ class StockAlgorithm:
         self.minimum_pe = 15
         self.maximum_pe = None
         self.risk = 1
+        self.normal = 1
+        self.maximum_price = None
         #self.stock_change = 0
 
+        self.stock_price = None
         self.earnings = None
         self.pe_ratio = None
         self.price_points = []
 
     def set_price_points(self, price_points: list):
         self.price_points = price_points
+
+    def set_normal(self, normal):
+        self.normal = normal
 
     def set_pe_ratio(self, pe_ratio):
         if not pe_ratio: return
@@ -78,6 +84,13 @@ class StockAlgorithm:
     def set_earnings(self, earnings):
         self.earnings = earnings
 
+    def set_stock_price(self, price):
+        self.stock_price = price
+        #print(self.stock_price)
+
+    def set_maximum_price(self, maximum):
+        self.maximum_price = maximum
+
     def get_price_change(self):
         formated_list = []
         for i in self.price_points:
@@ -88,7 +101,7 @@ class StockAlgorithm:
         #avg_angle = math.pi/2 - average_angle(self.price_points)
         #print('Average Angle:', math.degrees(avg_angle))
         price_change_buy = False
-        price_change = self.get_price_change() or 0
+        price_change = self.get_price_change() or 1
         #print(self.minimum_price_change, price_change)
         if self.minimum_price_change and float(price_change) < float(self.minimum_price_change):
             price_change_buy = True
@@ -98,18 +111,44 @@ class StockAlgorithm:
         #print("PE RATIO", pe_ratio)
         max_pe = (self.maximum_pe or 99999999999) * self.risk
         #print(max_pe)
-        if not pe_ratio: pe_ratio_buy = True
+        if not pe_ratio: 
+            pe_ratio_buy = True 
+            pe_ratio = 1
         elif pe_ratio and pe_ratio > self.minimum_pe and pe_ratio < max_pe:
             pe_ratio_buy = True
             #print("GOOD")
 
         #print(price_change_buy, pe_ratio_buy)
-            
-        self.price_points = []
-        self.pe_ratio = None
 
-        return pe_ratio_buy and price_change_buy
+        buy = pe_ratio_buy and price_change_buy
+        amount = 0
+
+        if buy:
+            stock_price = self.stock_price or 10
+            normal = self.normal or 1
+
+            print(self.stock_price)
+            print(normal,stock_price,price_change,pe_ratio)
+            amount = abs(round((normal/stock_price)*abs(100/price_change)*abs(pe_ratio) or 15))
+            if amount*stock_price > self.maximum_price:
+               amount = abs(round(self.maximum_price/self.stock_price))
+
+            print("Would cost you:", amount*stock_price)
+            #amount = 1
+
+
+        self.clear_stock_input()
+        return buy, amount
     
     def should_sell(self):
+        #print (self.earnings)
         if not self.earnings: return False
-        if self.earnings > self.minimum_earnings: True
+        if self.earnings > self.minimum_earnings: return True
+
+        self.clear_stock_input()
+
+    def clear_stock_input(self):
+        self.stock_price = None
+        self.earnings = None
+        self.pe_ratio = None
+        self.price_points = []
