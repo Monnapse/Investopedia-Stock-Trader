@@ -15,8 +15,8 @@ wait_time = 20
 
 # DRIVER
 options = Options() 
-#options.headless = True
-#options.add_argument("--headless=new")
+options.headless = True
+options.add_argument("--headless=new")
 options.add_argument("--window-size=1920,1080")
 options.add_argument('window-size=1920x1080')
 options.add_experimental_option("detach", True)

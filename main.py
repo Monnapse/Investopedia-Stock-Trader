@@ -12,6 +12,7 @@ import StockLookup
 from StockLookup.tms import time, time_type, time_direction
 import time as thread
 import requests
+import StockAlgorithm
 
 #from requests_oauth2client import BearerAuth
 
@@ -35,13 +36,13 @@ import requests
 
 
 
-import Investopedia
+#import Investopedia
 
-client = Investopedia.Account("astromonkey", 'Masonman0123!')
-client.change_game_session("Investopedia Trading Game")
+#client = Investopedia.Account("astromonkey", 'Masonman0123!')
+#client.change_game_session("Investopedia Trading Game")
 
-for stock in client.get_stocks():
-    print(stock.symbol, stock.quantity)
+#for stock in client.get_stocks():
+#    print(stock.symbol, stock.quantity)
 
 #e = '$1.00\n(0.17%)'
 #d,p = e.replace("(","").replace(")","").replace("%","").replace("$","").split("\n")
@@ -52,14 +53,37 @@ for stock in client.get_stocks():
 #print(time.time(1, time_type.year, time_direction.away))
 #print(time.now())
 
-#print(StockLookup.stock_lookup("DELL", time.time(1, time_type.year, time_direction.before)).quarterly_pe_ratio)
+headers = {
+        "User-Agent": "curl/7.68.0"
+    }
+r = requests.get("https://query1.finance.yahoo.com/v8/finance/chart/dell?period1=1702278000&period2=1710196097&interval=1d", headers=headers)
+stock = r.json()
+#url = "https://monnapse.github.io/cgjs.github.io/chart-types/index-money/?nodes="
+nodes = ""
+price_points = []
+index = 0
+for i in stock["chart"]["result"][0]["indicators"]["quote"][0]["open"]:
+    if i == None: 
+        continue
+    if index != 0:
+        nodes = nodes+","
+
+    index += 1
+
+    #print(format_time(index))
+    nodes = nodes+str(i)+","+str(index)
+    price_points.append([i, index])
+
+#print(nodes)
+print(StockAlgorithm.should_buy(price_points))
+
 """
 with open('stocks.csv', mode ='r') as file:
   csvFile = csv.DictReader(file)
   for row in csvFile:
         #print(yf.Ticker(row["Symbol"]).fast_info.last_price)
         symbol = row["Symbol"]
-        #stock_info = yf.Ticker(row["Symbol"]).fast_info
+        #stock_info = yf.Ticker(row["Symbol"]).fast_info/
         #print(stock_info.last_price)
         stock_info = StockLookup.stock_lookup(symbol, time.time(1, time_type.year, time_direction.before))#StockLookup.Stock(symbol)#StockLookup.get_stock(symbol)
         if stock_info:
