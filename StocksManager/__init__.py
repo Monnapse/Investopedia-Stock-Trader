@@ -11,7 +11,7 @@ import random
 from StocksManager import timeChecker
 
 class StockManager():
-    def __init__(self, client, stock_algorithm, period_amount, period, minimum_account_cash, tickers) -> None:
+    def __init__(self, client, stock_algorithm, period_amount, period, minimum_account_cash, sell_check_iterations, tickers) -> None:
         self.client = client
         self.stock_algorithm = stock_algorithm
         self.tickers = tickers
@@ -19,6 +19,7 @@ class StockManager():
         self.period = period
         self.minimum_account_balance = minimum_account_cash
         self.account_balance = 0
+        self.sell_check_iterations = sell_check_iterations or 5
 
     def set_tickers(self, tickers):
         self.tickers = tickers
@@ -40,6 +41,7 @@ class StockManager():
         print("Iterating")
         random.shuffle(self.tickers)
 
+        sell_iterations = 0
         iteration = 10
         reset_at = 2
 
@@ -51,6 +53,7 @@ class StockManager():
                 break
             #ticker = "AAPL"
             iteration += 1
+            sell_iterations += 1
 
             if iteration >= reset_at:
                 # Reset stocks owned
@@ -59,6 +62,16 @@ class StockManager():
                 self.account_balance = float(self.client.get_account_overview()["cash"].replace("$", "").replace(",", ""))
                 print("Account balance is", self.account_balance)
                 iteration = 0
+
+                if sell_iterations >= self.sell_check_iterations: # If iterations have gone through self.sell_check_iterations then check if sell needed
+                    print("Checking all owned stocks")
+                    for sell_ticker_info in self.stocks_owned:
+                        self.stock_algorithm.set_earnings(float(sell_ticker_info.total_change_percent))
+                        should_sell = self.stock_algorithm.should_sell()
+                        print(should_sell)
+                        if should_sell:
+                            print("Selling",ticker)
+                            self.client.trade(ticker, Action.sell, sell_ticker_info.quantity or 1)
 
             stock_owned = self.own_stock(ticker)
 
@@ -107,5 +120,5 @@ class StockManager():
         #print(self.tickers)
             
     def is_market_open(self):
-        return timeChecker.is_time_between(time2(7,30), time2(14,00))
-        #return timeChecker.is_time_between(time2(7,30), time2(18,00))
+        #return timeChecker.is_time_between(time2(7,30), time2(14,00))
+        return timeChecker.is_time_between(time2(7,30), time2(18,00))

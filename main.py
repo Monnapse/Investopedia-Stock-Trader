@@ -43,6 +43,8 @@ normal = 1.5 # Used to calculate the amount of stocks to buy, the higher = the m
 
 minimum_account_cash = 5000
 
+sell_check_iterations = 5 # After X stock checks, check if sell needed
+
 SA.set_maximum_price(maximum_cost)
 SA.set_minimum_earnings(minimum_earnings)
 SA.set_minimum_price_change(minimum_price_change)
@@ -50,7 +52,7 @@ SA.set_pe(minimum_pe, maximum_pe)
 SA.set_normal(normal)
 SA.set_risk(risk)
 
-stock_manager = StockManager(client, SA, period_amount, period, minimum_account_cash, csvReader.retrieve_csv_row("stocks.csv", "Symbol"))
+stock_manager = StockManager(client, SA, period_amount, period, minimum_account_cash, sell_check_iterations, csvReader.retrieve_csv_row("stocks.csv", "Symbol"))
 stock_manager.start()
 
 #symbol = "DELL"
