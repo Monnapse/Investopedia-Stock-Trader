@@ -15,8 +15,8 @@ wait_time = 20
 
 # DRIVER
 options = Options() 
-options.headless = True
-options.add_argument("--headless=new")
+#options.headless = True
+#options.add_argument("--headless=new")
 options.add_argument("--window-size=1920,1080")
 options.add_argument('window-size=1920x1080')
 options.add_experimental_option("detach", True)
@@ -82,9 +82,11 @@ class Account:
         print("Succesfully logged in")
 
     def new_page(self, url: str):
-        driver.get(self.base_url + url)
-
-        print("Loaded New page")
+        if driver.current_url != self.base_url + url:
+            driver.get(self.base_url + url)
+            print("Loaded New page")
+        else:
+            print("Page already loaded")
 
         time.sleep(1) # Wait for page to be loaded
 

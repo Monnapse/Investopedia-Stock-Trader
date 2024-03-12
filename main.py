@@ -35,9 +35,11 @@ minimum_earnings = 0.1 # Total Gain - For Selling
 minimum_pe = 15 # For buying
 maximum_pe = 25 # For buying
 
-maximum_cost = 4500 # For buying
+maximum_cost = 1500 # For buying
 
 normal = 1.5 # Used to calculate the amount of stocks to buy, the higher = the more stocks purchased
+
+minimum_account_cash = 5000
 
 SA.set_maximum_price(maximum_cost)
 SA.set_minimum_earnings(minimum_earnings)
@@ -46,7 +48,7 @@ SA.set_pe(minimum_pe, maximum_pe)
 SA.set_normal(normal)
 SA.set_risk(risk)
 
-stock_manager = StockManager(client, SA, period_amount, period, csvReader.retrieve_csv_row("stocks.csv", "Symbol"))
+stock_manager = StockManager(client, SA, period_amount, period, minimum_account_cash, csvReader.retrieve_csv_row("stocks.csv", "Symbol"))
 stock_manager.start()
 
 #symbol = "DELL"

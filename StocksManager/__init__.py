@@ -11,12 +11,14 @@ import random
 from StocksManager import timeChecker
 
 class StockManager():
-    def __init__(self, client, stock_algorithm, period_amount, period, tickers) -> None:
+    def __init__(self, client, stock_algorithm, period_amount, period, minimum_account_cash, tickers) -> None:
         self.client = client
         self.stock_algorithm = stock_algorithm
         self.tickers = tickers
         self.period_amount = period_amount
         self.period = period
+        self.minimum_account_balance = minimum_account_cash
+        self.account_balance = 0
 
     def set_tickers(self, tickers):
         self.tickers = tickers
@@ -38,8 +40,8 @@ class StockManager():
         print("Iterating")
         random.shuffle(self.tickers)
 
-        iteration = 0
-        reset_at = 5
+        iteration = 10
+        reset_at = 2
 
         self.stocks_owned = self.client.get_stocks()
 
@@ -54,6 +56,9 @@ class StockManager():
                 # Reset stocks owned
                 # Done every 5 stocks searched to stop rate limited
                 self.stocks_owned = self.client.get_stocks()
+                self.account_balance = float(self.client.get_account_overview()["cash"].replace("$", "").replace(",", ""))
+                print("Account balance is", self.account_balance)
+                iteration = 0
 
             stock_owned = self.own_stock(ticker)
 
@@ -70,7 +75,7 @@ class StockManager():
                 if should_sell:
                     print("Selling",ticker)
                     self.client.trade(ticker, Action.sell, stock_info.quantity or 1)
-            else:
+            elif self.account_balance > self.minimum_account_balance:
                 price_points = StockLookup.get_stock_price_points(ticker, time.time(self.period_amount, self.period, time_direction.before), time.now())
                 #print("Price points", price_points)
                 if price_points:
@@ -86,7 +91,7 @@ class StockManager():
                 #print(should_buy)
                 if should_buy:
                     print("Buying", amount, "of", ticker)
-                    #self.client.trade(ticker, Action.buy, amount or 1)
+                    self.client.trade(ticker, Action.buy, amount or 1)
 
             thread.sleep(0.1)
 
@@ -102,4 +107,5 @@ class StockManager():
         #print(self.tickers)
             
     def is_market_open(self):
-        return timeChecker.is_time_between(time2(7,30), time2(14,00))
+        #return timeChecker.is_time_between(time2(7,30), time2(14,00))
+        return timeChecker.is_time_between(time2(7,30), time2(18,00))
