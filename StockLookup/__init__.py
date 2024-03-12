@@ -162,6 +162,7 @@ def stock_lookup(symbol, period1: int=None, period2: int=None) -> stock_info:
     }
     response = requests.get(url, headers=headers)
     response_json = response.json()
+    #print(response_json)
     if response_json != None and response_json != 'NoneType':
         results = response_json["timeseries"]["result"]
         for i in results:
@@ -192,3 +193,41 @@ def stock_lookup(symbol, period1: int=None, period2: int=None) -> stock_info:
             stock_info.analyst_rating = data["meanRatingType"]
             
     return stock
+
+def get_stock_price_points(symbol: str, period1: int=None, period2: int=None) -> list:
+    url = yahoo_api.get_full_url(basic_lookup_sub).format(symbol=symbol, period1=str(period1), period2=str(period2))
+    print(url)
+    headers = {
+        "User-Agent": "curl/7.68.0"
+    }
+    response = requests.get(url, headers=headers)
+    #print(response.headers)
+    #print(response.content)
+    response_json = response.json()
+    #print(response_json["chart"]["result"][0]["meta"]["regularMarketPrice"])
+    if response_json == None or response_json == 'NoneType': return None
+    
+    result = response_json["chart"]["result"]
+
+    if result == None: return
+    data = None
+    try:
+        data = result[0]["indicators"]["quote"][0].get("open")
+    except:
+        return
+    if not data: return
+    #nodes = ""
+    price_points = []
+    index = 0
+    for i in data:
+        if i == None: 
+            continue
+        #if index != 0:
+        #    nodes = nodes+","
+
+        index += 1
+
+        #print(format_time(index))
+        #nodes = nodes+str(i)+","+str(index)
+        price_points.append([i, index])
+    return price_points
