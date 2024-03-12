@@ -95,6 +95,8 @@ class StockManager():
             if self.is_market_open():
                 print("The Market has opened")
                 self.iterate_stocks()
+            else:
+                print("Market is closed")
             thread.sleep(1)
         
         #print(self.tickers)
