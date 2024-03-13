@@ -43,7 +43,7 @@ normal = 1.5 # Used to calculate the amount of stocks to buy, the higher = the m
 
 minimum_account_cash = 5000
 
-sell_check_iterations = 5 # After X stock checks, check if sell needed
+sell_check_iterations = 30 # After X stock checks, check if sell needed
 
 SA.set_maximum_price(maximum_cost)
 SA.set_minimum_earnings(minimum_earnings)

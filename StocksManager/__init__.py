@@ -19,7 +19,7 @@ class StockManager():
         self.period = period
         self.minimum_account_balance = minimum_account_cash
         self.account_balance = 0
-        self.sell_check_iterations = sell_check_iterations or 5
+        self.sell_check_iterations = sell_check_iterations or 15
 
     def set_tickers(self, tickers):
         self.tickers = tickers
