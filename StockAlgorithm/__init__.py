@@ -4,6 +4,7 @@
 """
 
 import math
+import re
 
 def calculate_angle(x1, y1, x2, y2):
     # Calculate the angle between two points relative to the horizontal axis
@@ -63,7 +64,7 @@ class StockAlgorithm:
 
     def set_pe_ratio(self, pe_ratio):
         if not pe_ratio: return
-        self.pe_ratio = float(pe_ratio)
+        self.pe_ratio = float(re.sub(r'[^0-9.]', '', pe_ratio))
 
     def set_change(self, change: float):
         self.price_points = change
