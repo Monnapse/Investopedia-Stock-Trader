@@ -205,7 +205,7 @@ def get_stock_price_points(symbol: str, period1: int=None, period2: int=None) ->
     #print(response.content)
     response_json = response.json()
     #print(response_json["chart"]["result"][0]["meta"]["regularMarketPrice"])
-    if response_json == None or response_json == 'NoneType': return None
+    if response_json == None or response_json == 'NoneType' or not response_json.get("chart"): return None
     
     result = response_json["chart"]["result"]
 

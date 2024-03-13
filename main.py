@@ -32,7 +32,7 @@ period_amount = 1 # Grabing data
 
 minimum_price_change = 0.05 # To Buy
 
-minimum_earnings = 0.1 # Total Gain - For Selling
+minimum_earnings = 0.25 # Total Gain - For Selling
 
 minimum_pe = 15 # For buying
 maximum_pe = 25 # For buying
