@@ -24,6 +24,8 @@ SA = StockAlgorithm(StockAlgorithmMethods.simple)
 client = Investopedia.Account(os.environ["InvestopediaUsername"], os.environ["InvestopediaPassword"])
 client.change_game_session("Investopedia Trading Game")
 
+#client.sell_all_owned()
+
 # SETTINGS
 risk = 100 # 1+ The Higher the more risk | Recommended to set to 1
 
@@ -54,6 +56,9 @@ SA.set_risk(risk)
 
 stock_manager = StockManager(client, SA, period_amount, period, minimum_account_cash, sell_check_iterations, csvReader.retrieve_csv_row("stocks.csv", "Symbol"))
 stock_manager.start()
+
+
+
 
 #symbol = "DELL"
 #SA.set_price_points(StockLookup.get_stock_price_points(symbol, time.time(period_amount, period, time_direction.before), time.now()))
