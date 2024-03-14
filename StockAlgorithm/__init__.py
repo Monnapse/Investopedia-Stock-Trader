@@ -102,9 +102,9 @@ class StockAlgorithm:
         #avg_angle = math.pi/2 - average_angle(self.price_points)
         #print('Average Angle:', math.degrees(avg_angle))
         price_change_buy = False
-        price_change = self.get_price_change() or 1
+        price_change = self.get_price_change() or 0
         #print(self.minimum_price_change, price_change)
-        if self.minimum_price_change and float(price_change) < float(self.minimum_price_change):
+        if self.minimum_price_change and float(price_change) > float(self.minimum_price_change):
             price_change_buy = True
 
         pe_ratio_buy = False

@@ -30,7 +30,7 @@ risk = 100 # 1+ The Higher the more risk | Recommended to set to 1
 period = time_type.day # Grabing data
 period_amount = 1 # Grabing data
 
-minimum_price_change = 0.05 # To Buy
+minimum_price_change = 0.1 # To Buy
 
 minimum_earnings = 0.25 # Total Gain - For Selling
 
@@ -41,7 +41,7 @@ maximum_cost = 1500 # For buying
 
 normal = 1.5 # Used to calculate the amount of stocks to buy, the higher = the more stocks purchased
 
-minimum_account_cash = 5000
+minimum_account_cash = 15000
 
 sell_check_iterations = 30 # After X stock checks, check if sell needed
 
