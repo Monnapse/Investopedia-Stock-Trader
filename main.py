@@ -28,9 +28,10 @@ client.change_game_session("Investopedia Trading Game")
 
 # SETTINGS
 risk = 100 # 1+ The Higher the more risk | Recommended to set to 1
+min_sum = 3 # Min amount of checks for algorithm
 
 period = time_type.day # Grabing data
-period_amount = 1 # Grabing data
+period_amount = 2 # Grabing data
 
 minimum_price_change = 0.1 # To Buy
 
@@ -53,6 +54,7 @@ SA.set_minimum_price_change(minimum_price_change)
 SA.set_pe(minimum_pe, maximum_pe)
 SA.set_normal(normal)
 SA.set_risk(risk)
+SA.set_min_sum(min_sum)
 
 stock_manager = StockManager(client, SA, period_amount, period, minimum_account_cash, sell_check_iterations, csvReader.retrieve_csv_row("stocks.csv", "Symbol"))
 stock_manager.start()
@@ -60,10 +62,10 @@ stock_manager.start()
 
 
 
-#symbol = "DELL"
+#symbol = "YUEIY"
 #SA.set_price_points(StockLookup.get_stock_price_points(symbol, time.time(period_amount, period, time_direction.before), time.now()))
 #stock_info = StockLookup.stock_lookup(symbol, time.time(7, period, time_direction.before))#StockLookup.Stock(symbol)#StockLookup.get_stock(symbol)
-#print(stock_info.basic.market_price)
+#print(SA.get_price_change())
 #SA.set_pe_ratio(stock_info.trailing_pe_ratio)
 #SA.set_stock_price(stock_info.basic.market_price)
 #

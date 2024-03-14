@@ -28,13 +28,8 @@ def average_angle(points):
     return avg_angle
 
 def calculate_total_price_change(prices):
-    if len(prices) <= 0: return
-    initial_price = prices[0]
-    percentage_changes = [(price - initial_price) / initial_price * 100 for price in prices]
-    percentage_change = 0
-    for i in percentage_changes:
-        percentage_change+=i
-    return percentage_change/len(prices)
+    total_change = sum(prices[i] - prices[i - 1] for i in range(1, len(prices)))
+    return total_change
 
 class StockAlgorithmMethods:
     simple = "simple"
@@ -49,12 +44,17 @@ class StockAlgorithm:
         self.risk = 1
         self.normal = 1
         self.maximum_price = None
+        self.min_sum = 2
         #self.stock_change = 0
 
         self.stock_price = None
         self.earnings = None
         self.pe_ratio = None
+        self.analyst = None
         self.price_points = []
+
+    def set_min_sum(self, min_sum):
+        self.min_sum = min_sum
 
     def set_price_points(self, price_points: list):
         self.price_points = price_points
@@ -89,6 +89,9 @@ class StockAlgorithm:
         self.stock_price = price
         #print(self.stock_price)
 
+    def set_analyst(self, analyst):
+        self.analyst = analyst
+
     def set_maximum_price(self, maximum):
         self.maximum_price = maximum
 
@@ -98,44 +101,48 @@ class StockAlgorithm:
             formated_list.append(i[0])
         return calculate_total_price_change(formated_list)
 
-    def should_buy(self):
+    def should_buy(self, symbol:str = ""):
         #avg_angle = math.pi/2 - average_angle(self.price_points)
         #print('Average Angle:', math.degrees(avg_angle))
-        price_change_buy = False
+        sum = 0
+
         price_change = self.get_price_change() or 0
         #print(self.minimum_price_change, price_change)
         if self.minimum_price_change and float(price_change) > float(self.minimum_price_change):
-            price_change_buy = True
+            sum += 1
 
-        pe_ratio_buy = False
-        pe_ratio = self.pe_ratio
+        #pe_ratio_buy = False
+        pe_ratio = self.pe_ratio or 1
         #print("PE RATIO", pe_ratio)
         max_pe = (self.maximum_pe or 99999999999) * self.risk
         #print(max_pe)
-        if not pe_ratio: 
-            pe_ratio_buy = True 
-            pe_ratio = 1
-        elif pe_ratio and pe_ratio > self.minimum_pe and pe_ratio < max_pe:
-            pe_ratio_buy = True
+        if pe_ratio and pe_ratio > self.minimum_pe and pe_ratio < max_pe:
+            sum += 1
+            #pe_ratio_buy = True
             #print("GOOD")
 
         #print(price_change_buy, pe_ratio_buy)
+        
+        if self.analyst and self.analyst == "Buy" or self.analyst == "Strong Buy":
+            sum += 1
 
-        buy = pe_ratio_buy and price_change_buy
+        buy = sum >= self.min_sum
         amount = 0
 
         if buy:
             stock_price = self.stock_price or 10
             normal = self.normal or 1
 
-            print(self.stock_price)
-            print(normal,stock_price,price_change,pe_ratio)
+            #print(self.stock_price)
+            #print(normal,stock_price,price_change,pe_ratio)
             amount = abs(round((normal/stock_price)*abs(100/price_change)*abs(pe_ratio) or 15))
             if amount*stock_price > self.maximum_price:
-               amount = abs(round(self.maximum_price/self.stock_price))
-
-            print("Would cost you:", amount*stock_price)
+               amount = abs(round(self.maximum_price/stock_price))
+            print(f"Symbol: {symbol}, Stock Price: ${str(stock_price)}, Price Change {str(price_change)}%, PE Ratio: {str(pe_ratio)}, Stock Amount: {str(amount)}, Price: {str(amount*stock_price)}")
+            #print("Would cost you:", amount*stock_price)
             #amount = 1
+        else:
+            print(f"Symbol: {symbol}, Sum: {sum}")
 
 
         self.clear_stock_input()

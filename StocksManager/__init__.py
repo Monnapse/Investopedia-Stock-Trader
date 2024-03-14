@@ -42,8 +42,8 @@ class StockManager():
         random.shuffle(self.tickers)
 
         sell_iterations = 0
-        iteration = 10
-        reset_at = 2
+        iteration = 15
+        reset_at = 10
 
         self.stocks_owned = self.client.get_stocks()
 
@@ -59,8 +59,10 @@ class StockManager():
                 # Reset stocks owned
                 # Done every 5 stocks searched to stop rate limited
                 self.stocks_owned = self.client.get_stocks()
-                self.account_balance = float(self.client.get_account_overview()["cash"].replace("$", "").replace(",", ""))
-                print("Account balance is", self.account_balance)
+                account_overview = self.client.get_account_overview()
+                if account_overview:
+                    self.account_balance = float(self.client.get_account_overview()["cash"].replace("$", "").replace(",", ""))
+                    print("Account balance is", self.account_balance)
                 
                 iteration = 0
 
@@ -100,10 +102,11 @@ class StockManager():
 
                 if stock_info:
                     self.stock_algorithm.set_pe_ratio(stock_info.trailing_pe_ratio)
+                    self.stock_algorithm.set_analyst(stock_info.analyst_rating)
                     if stock_info.basic:
                         self.stock_algorithm.set_stock_price(stock_info.basic.market_price)
-
-                should_buy, amount = self.stock_algorithm.should_buy()
+                        
+                should_buy, amount = self.stock_algorithm.should_buy(ticker)
                 #print(should_buy)
                 if should_buy:
                     print("Buying", amount, "of", ticker)
