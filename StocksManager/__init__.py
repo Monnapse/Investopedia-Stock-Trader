@@ -9,6 +9,7 @@ import time as thread
 from datetime import time as time2
 import random
 from StocksManager import timeChecker
+from datetime import datetime
 
 class StockManager():
     def __init__(self, client, stock_algorithm, period_amount, period, minimum_account_cash, sell_check_iterations, tickers) -> None:
@@ -126,5 +127,6 @@ class StockManager():
         #print(self.tickers)
             
     def is_market_open(self):
-        return timeChecker.is_time_between(time2(7,30), time2(14,00))
+        week_day = datetime.today().weekday()
+        return timeChecker.is_time_between(time2(7,30), time2(14,00)) and week_day != 5 and week_day != 6
         #return timeChecker.is_time_between(time2(7,30), time2(18,00))
