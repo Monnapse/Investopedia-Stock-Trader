@@ -179,20 +179,23 @@ def stock_lookup(symbol, period1: int=None, period2: int=None) -> stock_info:
                     setattr(stock, format_camel_case(meta_type), meta_value)
 
     # Nasdaq Data
-    url = nasdaq_api.get_full_url(analyst_rating).format(symbol=symbol)
+    try:
+        url = nasdaq_api.get_full_url(analyst_rating).format(symbol=symbol)
 
-    analyst_headers = {
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        "User-Agent":"Java-http-client/"
-    }
-    response = requests.get(url, headers=analyst_headers)
-    if not response: return
-    response_json = response.json()
-    if response_json != None and response_json != 'NoneType':
-        data = response_json["data"]
-        if data:
-            stock_info.analyst_rating = data["meanRatingType"]
+        analyst_headers = {
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "User-Agent":"Java-http-client/"
+        }
+        response = requests.get(url, headers=analyst_headers)
+        if not response: return
+        response_json = response.json()
+        if response_json != None and response_json != 'NoneType':
+            data = response_json["data"]
+            if data:
+                stock.analyst_rating = data["meanRatingType"]
+    except:
+        pass
             
     return stock
 

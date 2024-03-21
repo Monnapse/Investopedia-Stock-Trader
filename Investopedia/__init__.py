@@ -65,6 +65,8 @@ class Account:
 
         self.new_page(self.portfolio_url)
 
+        time.sleep(3)
+
         # Sign in
         username_element = web_driver_waiter.until(EC.presence_of_element_located((By.ID, 'username')))#driver.find_element(By.ID, "username")
         username_element.send_keys(username)
@@ -75,7 +77,7 @@ class Account:
         login_element = web_driver_waiter.until(EC.presence_of_element_located((By.ID, 'login')))#driver.find_element(By.ID, "login")
         login_element.click()
 
-        time.sleep(1)
+        time.sleep(3)
         try:
             if driver.find_element(By.CLASS_NAME, "alert-error"):
                 # Restart

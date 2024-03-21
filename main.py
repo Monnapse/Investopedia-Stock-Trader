@@ -22,20 +22,20 @@ SA = StockAlgorithm(StockAlgorithmMethods.simple)
 #client = ""
 
 client = Investopedia.Account(os.environ["InvestopediaUsername"], os.environ["InvestopediaPassword"])
-client.change_game_session("Investopedia Trading Game")
+client.change_game_session("Gorman Fin Lit 2nd")
 
 #client.sell_all_owned()
 
 # SETTINGS
-risk = 100 # 1+ The Higher the more risk | Recommended to set to 1
+risk = 2.5 # 1+ The Higher the more risk | Recommended to set to 1
 min_sum = 3 # Min amount of checks for algorithm
 
 period = time_type.day # Grabing data
-period_amount = 2 # Grabing data
+period_amount = 1 # Grabing data
 
 minimum_price_change = 0.1 # To Buy
 
-minimum_earnings = 0.25 # Total Gain - For Selling
+minimum_earnings = 0.175 # Total Gain - For Selling
 
 minimum_pe = 15 # For buying
 maximum_pe = 25 # For buying
