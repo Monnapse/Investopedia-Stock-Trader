@@ -31,11 +31,11 @@ risk = 2.5 # 1+ The Higher the more risk | Recommended to set to 1
 min_sum = 3 # Min amount of checks for algorithm
 
 period = time_type.day # Grabing data
-period_amount = 1 # Grabing data
+period_amount = 3 # Grabing data
 
-minimum_price_change = 0.1 # To Buy
+minimum_price_change = 0.2 # To Buy
 
-minimum_earnings = 0.175 # Total Gain - For Selling
+minimum_earnings = 0.05 # Total Gain - For Selling
 
 minimum_pe = 15 # For buying
 maximum_pe = 25 # For buying
@@ -46,7 +46,7 @@ normal = 1.5 # Used to calculate the amount of stocks to buy, the higher = the m
 
 minimum_account_cash = 15000
 
-sell_check_iterations = 30 # After X stock checks, check if sell needed
+sell_check_iterations = 10 # After X stock checks, check if sell needed
 
 SA.set_maximum_price(maximum_cost)
 SA.set_minimum_earnings(minimum_earnings)
