@@ -31,7 +31,7 @@ risk = 2.5 # 1+ The Higher the more risk | Recommended to set to 1
 min_sum = 3 # Min amount of checks for algorithm
 
 period = time_type.day # Grabing data
-period_amount = 1 # Grabing data
+period_amount = 3 # Grabing data
 
 minimum_price_change = 0.1 # To Buy
 
