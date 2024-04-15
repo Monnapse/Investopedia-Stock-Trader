@@ -19,12 +19,10 @@ import os
 
 SA = StockAlgorithm(StockAlgorithmMethods.simple)
 
-#client = ""
-
 client = Investopedia.Account(os.environ["InvestopediaUsername"], os.environ["InvestopediaPassword"])
-client.change_game_session("Gorman Fin Lit 2nd")
+#client.change_game_session("") # Change this to your game session
 
-#client.sell_all_owned()
+#client.sell_all_owned() # You can sell all your stocks with this function
 
 # SETTINGS
 risk = 2.5 # 1+ The Higher the more risk | Recommended to set to 1
@@ -58,18 +56,3 @@ SA.set_min_sum(min_sum)
 
 stock_manager = StockManager(client, SA, period_amount, period, minimum_account_cash, sell_check_iterations, csvReader.retrieve_csv_row("stocks.csv", "Symbol"))
 stock_manager.start()
-
-
-
-
-#symbol = "YUEIY"
-#SA.set_price_points(StockLookup.get_stock_price_points(symbol, time.time(period_amount, period, time_direction.before), time.now()))
-#stock_info = StockLookup.stock_lookup(symbol, time.time(7, period, time_direction.before))#StockLookup.Stock(symbol)#StockLookup.get_stock(symbol)
-#print(SA.get_price_change())
-#SA.set_pe_ratio(stock_info.trailing_pe_ratio)
-#SA.set_stock_price(stock_info.basic.market_price)
-#
-#print(SA.should_buy())
-
-#stock_info = StockLookup.stock_lookup(symbol, time.time(7, period, time_direction.before))#StockLookup.Stock(symbol)#StockLookup.get_stock(symbol)
-#print(stock_info.trailing_pe_ratio)
